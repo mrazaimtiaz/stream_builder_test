@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:stream_builder_test/main_screen.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:stream_builder_test/start_screen.dart';
 
 void main() {
   runApp(MyApp());
@@ -33,7 +34,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: MainScreen(),
+      home: StartScreen(),
     );
   }
 }

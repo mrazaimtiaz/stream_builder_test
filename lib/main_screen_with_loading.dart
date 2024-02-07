@@ -3,17 +3,16 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:rxdart/subjects.dart';
-import 'package:stream_builder_test/main_screen_with_loading.dart';
 import 'package:stream_builder_test/model/item.dart';
 
-class MainScreen extends StatefulWidget {
-  MainScreen();
+class MainScreenWithLoading extends StatefulWidget {
+  MainScreenWithLoading();
 
   @override
-  _MainScreenState createState() => _MainScreenState();
+  _MainScreenWithLoadingState createState() => _MainScreenWithLoadingState();
 }
 
-class _MainScreenState extends State<MainScreen> {
+class _MainScreenWithLoadingState extends State<MainScreenWithLoading> {
   @override
   void initState() {
     var dummyList = [
@@ -67,44 +66,44 @@ class _MainScreenState extends State<MainScreen> {
             }),
       ),
       body: SingleChildScrollView(
-        child: Column(
-          children: <Widget>[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text("Select below item to change title"),
-                OutlinedButton(
-                    onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => MainScreenWithLoading(),
-                          ));
-                    },
-                    child: Text("With Loading"))
-              ],
-            ),
-            StreamBuilder<List<Item>>(
-                stream: listOfItems,
-                initialData: [],
-                builder: (context, snapshot) {
-                  return Column(
-                    children: snapshot.hasData
-                        ? snapshot.data!
-                            .map((e) => Padding(
-                                  padding: const EdgeInsets.all(28.0),
-                                  child: ElevatedButton(
-                                    onPressed: () {
-                                      changeTitle(e.NameAr + " " + e.NameEn);
-                                    },
-                                    child: Text(e.NameAr + " " + e.NameEn),
-                                  ),
-                                ))
-                            .toList()
-                        : [],
-                  );
-                }),
-          ],
+        child: Center(
+          child: Column(
+            children: <Widget>[
+              StreamBuilder<bool>(
+                  stream: isLoading,
+                  builder: (context, snapshot) {
+                    var isLoading = snapshot.data;
+                    return isLoading != null && isLoading
+                        ? CircularProgressIndicator()
+                        : Container();
+                  }),
+              Text("Select below item to change title"),
+              StreamBuilder<List<Item>>(
+                  stream: listOfItems,
+                  initialData: [],
+                  builder: (context, snapshot) {
+                    return Column(
+                      children: snapshot.hasData
+                          ? snapshot.data!
+                              .map((e) => Padding(
+                                    padding: const EdgeInsets.all(28.0),
+                                    child: ElevatedButton(
+                                      onPressed: () async {
+                                        changeIsLoading(true);
+                                        await Future.delayed(
+                                            Duration(seconds: 2));
+                                        changeIsLoading(false);
+                                        changeTitle(e.NameAr + " " + e.NameEn);
+                                      },
+                                      child: Text(e.NameAr + " " + e.NameEn),
+                                    ),
+                                  ))
+                              .toList()
+                          : [],
+                    );
+                  }),
+            ],
+          ),
         ),
       ),
     );
